@@ -1,0 +1,6 @@
+rule,reason,action,rows
+R1,Windows line endings,"normalised to LF, row kept",659
+R4,identical code carries both labels,quarantined,3
+R4,same function has another label in the other dataset version,quarantined,38
+R5,copy of a function that is already in an earlier split (leakage),removed from the later split,33
+R5,copy repeated inside the same split,"removed, first copy kept",23

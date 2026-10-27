@@ -1,0 +1,12 @@
+{
+  "run": "majority_with_p3",
+  "role": "reference: what accuracy looks like with no model",
+  "method": "always predict the majority class (not vulnerable)",
+  "variant": "with_p3",
+  "class_weights_rule": "balanced",
+  "train_seconds": 0.0,
+  "trainable_parameters": 0,
+  "fixed_threshold": 0.5,
+  "seed": 42,
+  "finished_at": "2026-10-27T09:53:17Z"
+}

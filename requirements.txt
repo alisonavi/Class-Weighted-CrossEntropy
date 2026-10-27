@@ -1,0 +1,14 @@
+torch==2.14.1
+transformers==5.21.0
+tokenizers==0.23.3
+safetensors==0.8.0
+huggingface-hub==2.3.0
+scikit-learn==1.9.1
+pandas==3.1.0
+numpy==2.5.4
+matplotlib==3.11.2
+tree-sitter==0.26.0
+tree-sitter-java==0.23.5
+nbformat==5.11.1
+nbconvert==7.17.2
+ipykernel==7.4.0

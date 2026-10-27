@@ -1,0 +1,48 @@
+{
+  "run": "codebert_plain",
+  "role": "ablation, paper baseline without weights",
+  "method": "CodeBERT fine-tuned end to end with a classification head",
+  "variant": "with_p3",
+  "loss": "cross-entropy",
+  "class_weights_rule": "none",
+  "class_weights": {
+    "not_vulnerable": 1.0,
+    "vulnerable": 1.0
+  },
+  "model": {
+    "name": "microsoft/codebert-base",
+    "revision": "3b0952feddeffad0063f274080e3c23d75e7eb39",
+    "max_length": 512
+  },
+  "hyperparameters": {
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "bucket_size": 50,
+    "epochs": 4,
+    "seed": 42,
+    "limit": null
+  },
+  "rows": {
+    "train": 13214,
+    "valid": 5116,
+    "test": 4547
+  },
+  "best_epoch": 4,
+  "best_valid_roc_auc": 0.8721,
+  "train_seconds": 2890.3,
+  "trainable_parameters": 124647170,
+  "device": "mps",
+  "software": {
+    "python": "3.12.13",
+    "torch": "2.14.1",
+    "transformers": "5.21.0",
+    "scikit-learn": "1.9.1"
+  },
+  "checkpoint": "checkpoints/codebert_plain",
+  "checkpoint_sha256": "a6ba33a5a36531b12f4e38d21328953c400a52b29cf8d90e8698741aaaa7d775",
+  "finished_at": "2026-10-27T07:47:32Z"
+}

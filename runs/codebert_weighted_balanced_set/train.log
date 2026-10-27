@@ -1,0 +1,29 @@
+run codebert_weighted_balanced_set: same method on the balanced dataset
+variant without_p3, device mps, epochs 10, batch 16, lr 2e-05
+train    801 functions,  394 vulnerable
+valid    267 functions,  134 vulnerable
+test     246 functions,  117 vulnerable
+class weights (balanced): not vulnerable 0.984, vulnerable 1.016
+inputs cut at 512 tokens: 50.0%
+trainable parameters 124,647,170; 51 steps per epoch, 510 in total
+  epoch 1 step 51/51  loss 0.7050  76s
+epoch 1: train loss 0.7050, valid ROC AUC 0.5417, valid PR AUC 0.5412, 82s  -> best so far, checkpoint saved
+  epoch 2 step 51/51  loss 0.7119  74s
+epoch 2: train loss 0.7119, valid ROC AUC 0.5432, valid PR AUC 0.5419, 80s  -> best so far, checkpoint saved
+  epoch 3 step 51/51  loss 0.7050  74s
+epoch 3: train loss 0.7050, valid ROC AUC 0.5107, valid PR AUC 0.5175, 79s
+  epoch 4 step 51/51  loss 0.7013  74s
+epoch 4: train loss 0.7013, valid ROC AUC 0.5540, valid PR AUC 0.5530, 79s  -> best so far, checkpoint saved
+  epoch 5 step 51/51  loss 0.6914  75s
+epoch 5: train loss 0.6914, valid ROC AUC 0.5445, valid PR AUC 0.5411, 81s
+  epoch 6 step 51/51  loss 0.6902  76s
+epoch 6: train loss 0.6902, valid ROC AUC 0.5506, valid PR AUC 0.5477, 82s
+  epoch 7 step 51/51  loss 0.6919  77s
+epoch 7: train loss 0.6919, valid ROC AUC 0.5533, valid PR AUC 0.5527, 83s
+  epoch 8 step 51/51  loss 0.6866  76s
+epoch 8: train loss 0.6866, valid ROC AUC 0.5538, valid PR AUC 0.5479, 81s
+  epoch 9 step 51/51  loss 0.6784  75s
+epoch 9: train loss 0.6784, valid ROC AUC 0.5531, valid PR AUC 0.5456, 81s
+  epoch 10 step 51/51  loss 0.6726  76s
+epoch 10: train loss 0.6726, valid ROC AUC 0.5522, valid PR AUC 0.5458, 82s
+best epoch 4 (valid ROC AUC 0.5540); total 13.5 min

@@ -1,0 +1,13 @@
+,with_p3,with_p3,without_p3,without_p3
+,before,after,before,after
+rows,22954.0,22877.0,1334.0,1314.0
+completeness %,100.0,100.0,100.0,100.0
+uniqueness %,99.52,100.0,99.85,100.0
+validity %,100.0,100.0,100.0,100.0
+label consistency %,99.9,100.0,98.58,100.0
+functions in more than one split,29.0,0.0,1.0,0.0
+rows with CRLF line endings,624.0,0.0,35.0,0.0
+positives,646.0,644.0,665.0,645.0
+negatives,22308.0,22233.0,669.0,669.0
+prevalence %,2.81,2.82,49.85,49.09
+negatives per positive,34.5,34.5,1.0,1.0

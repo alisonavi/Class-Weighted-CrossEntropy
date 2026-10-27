@@ -1,0 +1,48 @@
+{
+  "run": "codebert_sqrt",
+  "role": "ablation, milder weights",
+  "method": "CodeBERT fine-tuned end to end with a classification head",
+  "variant": "with_p3",
+  "loss": "class-weighted cross-entropy",
+  "class_weights_rule": "sqrt",
+  "class_weights": {
+    "not_vulnerable": 0.7179,
+    "vulnerable": 4.0846
+  },
+  "model": {
+    "name": "microsoft/codebert-base",
+    "revision": "3b0952feddeffad0063f274080e3c23d75e7eb39",
+    "max_length": 512
+  },
+  "hyperparameters": {
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "bucket_size": 50,
+    "epochs": 4,
+    "seed": 42,
+    "limit": null
+  },
+  "rows": {
+    "train": 13214,
+    "valid": 5116,
+    "test": 4547
+  },
+  "best_epoch": 4,
+  "best_valid_roc_auc": 0.856,
+  "train_seconds": 2852.3,
+  "trainable_parameters": 124647170,
+  "device": "mps",
+  "software": {
+    "python": "3.12.13",
+    "torch": "2.14.1",
+    "transformers": "5.21.0",
+    "scikit-learn": "1.9.1"
+  },
+  "checkpoint": "checkpoints/codebert_sqrt",
+  "checkpoint_sha256": "90ca7e1b6a5ad98ffbcaf878da6f3e7c5294f0d89c98fd807d02e4881c02d46e",
+  "finished_at": "2026-10-27T08:53:32Z"
+}

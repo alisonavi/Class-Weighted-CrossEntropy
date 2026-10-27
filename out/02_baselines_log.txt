@@ -1,0 +1,10 @@
+
+==============================================================================
+REFERENCE BASELINES
+==============================================================================
+majority_with_p3         valid ROC AUC 0.5000  (0.0s)
+length_lr_with_p3        valid ROC AUC 0.8133  (0.0s)
+tfidf_lr_with_p3         valid ROC AUC 0.8516  (2.1s)
+majority_without_p3      valid ROC AUC 0.5000  (0.0s)
+length_lr_without_p3     valid ROC AUC 0.5417  (0.0s)
+tfidf_lr_without_p3      valid ROC AUC 0.5524  (0.4s)

@@ -1,0 +1,10 @@
+run frozen_codebert_lr: alternative method, frozen CodeBERT (mean pooling) + logistic regression, class_weight=balanced
+train  13214 functions,  396 vulnerable
+valid   5116 functions,  130 vulnerable
+test    4547 functions,  118 vulnerable
+embeddings (22877, 768) computed in 3.1 min on mps
+C = 0.01   valid ROC AUC 0.8373
+C = 0.1    valid ROC AUC 0.8198
+C = 1.0    valid ROC AUC 0.8033
+C = 10.0   valid ROC AUC 0.7948
+best C 0.01 (valid ROC AUC 0.8373); total 3.1 min

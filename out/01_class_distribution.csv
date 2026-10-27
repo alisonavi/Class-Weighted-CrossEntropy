@@ -1,0 +1,7 @@
+variant,split,P1,P2,P3,rows,positives,prevalence %
+with_p3,train,396,396,12422,13214,396,3.0
+with_p3,valid,130,130,4856,5116,130,2.54
+with_p3,test,118,121,4308,4547,118,2.6
+without_p3,train,394,407,0,801,394,49.19
+without_p3,valid,134,133,0,267,134,50.19
+without_p3,test,117,129,0,246,117,47.56

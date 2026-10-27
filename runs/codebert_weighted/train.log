@@ -1,0 +1,49 @@
+run codebert_weighted: primary method
+variant with_p3, device mps, epochs 4, batch 16, lr 2e-05
+train  13214 functions,  396 vulnerable
+valid   5116 functions,  130 vulnerable
+test    4547 functions,  118 vulnerable
+class weights (balanced): not vulnerable 0.515, vulnerable 16.684
+inputs cut at 512 tokens: 13.4%
+trainable parameters 124,647,170; 826 steps per epoch, 3304 in total
+  epoch 1 step 100/826  loss 0.5477  88s
+  epoch 1 step 200/826  loss 0.8179  175s
+  epoch 1 step 300/826  loss 0.8036  256s
+  epoch 1 step 400/826  loss 0.7327  335s
+  epoch 1 step 500/826  loss 0.8152  417s
+  epoch 1 step 600/826  loss 0.6665  499s
+  epoch 1 step 700/826  loss 0.6562  585s
+  epoch 1 step 800/826  loss 0.7394  680s
+  epoch 1 step 826/826  loss 0.8733  702s
+epoch 1: train loss 0.7282, valid ROC AUC 0.8271, valid PR AUC 0.1076, 741s  -> best so far, checkpoint saved
+  epoch 2 step 100/826  loss 0.7532  101s
+  epoch 2 step 200/826  loss 0.7535  189s
+  epoch 2 step 300/826  loss 0.4977  272s
+  epoch 2 step 400/826  loss 0.6265  343s
+  epoch 2 step 500/826  loss 0.6363  427s
+  epoch 2 step 600/826  loss 0.5953  506s
+  epoch 2 step 700/826  loss 0.5890  588s
+  epoch 2 step 800/826  loss 0.6868  668s
+  epoch 2 step 826/826  loss 0.6333  694s
+epoch 2: train loss 0.6404, valid ROC AUC 0.8471, valid PR AUC 0.1253, 734s  -> best so far, checkpoint saved
+  epoch 3 step 100/826  loss 0.6399  79s
+  epoch 3 step 200/826  loss 0.4104  164s
+  epoch 3 step 300/826  loss 0.6643  243s
+  epoch 3 step 400/826  loss 0.6014  335s
+  epoch 3 step 500/826  loss 0.5378  414s
+  epoch 3 step 600/826  loss 0.6725  501s
+  epoch 3 step 700/826  loss 0.6389  584s
+  epoch 3 step 800/826  loss 0.4936  671s
+  epoch 3 step 826/826  loss 0.4424  693s
+epoch 3: train loss 0.5834, valid ROC AUC 0.8535, valid PR AUC 0.1340, 732s  -> best so far, checkpoint saved
+  epoch 4 step 100/826  loss 0.5630  77s
+  epoch 4 step 200/826  loss 0.4790  159s
+  epoch 4 step 300/826  loss 0.5484  242s
+  epoch 4 step 400/826  loss 0.6741  339s
+  epoch 4 step 500/826  loss 0.3928  423s
+  epoch 4 step 600/826  loss 0.4955  507s
+  epoch 4 step 700/826  loss 0.5557  584s
+  epoch 4 step 800/826  loss 0.4981  670s
+  epoch 4 step 826/826  loss 0.5379  693s
+epoch 4: train loss 0.5249, valid ROC AUC 0.8600, valid PR AUC 0.1494, 732s  -> best so far, checkpoint saved
+best epoch 4 (valid ROC AUC 0.8600); total 49.0 min

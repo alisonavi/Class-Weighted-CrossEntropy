@@ -1,0 +1,6 @@
+variant,partition,functions,median_tokens,p90_tokens,over_512_pct
+with_p3,P1,644,476.0,2500.1,47.7
+with_p3,P2,647,540.0,2492.8,52.2
+with_p3,P3,21586,90.0,555.0,11.2
+without_p3,P1,645,475.0,2491.8,47.6
+without_p3,P2,669,537.0,2487.4,52.3

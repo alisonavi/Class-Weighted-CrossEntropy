@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-10-27T09:53:16Z",
+  "sources": {
+    "with_p3": {
+      "url": "https://raw.githubusercontent.com/rmusab/vul-llm-finetune/862ed17bd935aa86e1e1e95966fa84ecdaa88888/Datasets/with_p3/java_k_1_strict_2023_06_30.tar.gz",
+      "sha256": "76e1bc8dd360d122b8939569bf57919df4f388d37d3f1762b0088732ba919e58"
+    },
+    "without_p3": {
+      "url": "https://raw.githubusercontent.com/rmusab/vul-llm-finetune/862ed17bd935aa86e1e1e95966fa84ecdaa88888/Datasets/without_p3/java_k_1_strict_2023_07_03.tar.gz",
+      "sha256": "660e3d1d9b60248ab597d8465878330db83d028a8974ca99164671451ab1aba1"
+    },
+    "cwe_catalog": {
+      "url": "https://cwe.mitre.org/data/xml/cwec_v4.20.xml.zip",
+      "sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50"
+    }
+  },
+  "rows_landed": {
+    "with_p3": 22954,
+    "without_p3": 1334
+  },
+  "rows_clean": {
+    "with_p3": 22877,
+    "without_p3": 1314
+  },
+  "rows_by_status": {
+    "with_p3": {
+      "clean": 22877,
+      "duplicate": 55,
+      "needs_expert_review": 22
+    },
+    "without_p3": {
+      "clean": 1314,
+      "duplicate": 1,
+      "needs_expert_review": 19
+    }
+  },
+  "issues": {
+    "R1 Windows line endings": 659,
+    "R4 identical code carries both labels": 3,
+    "R4 same function has another label in the other dataset version": 38,
+    "R5 copy of a function that is already in an earlier split (leakage)": 33,
+    "R5 copy repeated inside the same split": 23
+  },
+  "quality": {
+    "with_p3 before": {
+      "rows": 22954.0,
+      "completeness %": 100.0,
+      "uniqueness %": 99.52,
+      "validity %": 100.0,
+      "label consistency %": 99.9,
+      "functions in more than one split": 29.0,
+      "rows with CRLF line endings": 624.0,
+      "positives": 646.0,
+      "negatives": 22308.0,
+      "prevalence %": 2.81,
+      "negatives per positive": 34.5
+    },
+    "with_p3 after": {
+      "rows": 22877.0,
+      "completeness %": 100.0,
+      "uniqueness %": 100.0,
+      "validity %": 100.0,
+      "label consistency %": 100.0,
+      "functions in more than one split": 0.0,
+      "rows with CRLF line endings": 0.0,
+      "positives": 644.0,
+      "negatives": 22233.0,
+      "prevalence %": 2.82,
+      "negatives per positive": 34.5
+    },
+    "without_p3 before": {
+      "rows": 1334.0,
+      "completeness %": 100.0,
+      "uniqueness %": 99.85,
+      "validity %": 100.0,
+      "label consistency %": 98.58,
+      "functions in more than one split": 1.0,
+      "rows with CRLF line endings": 35.0,
+      "positives": 665.0,
+      "negatives": 669.0,
+      "prevalence %": 49.85,
+      "negatives per positive": 1.0
+    },
+    "without_p3 after": {
+      "rows": 1314.0,
+      "completeness %": 100.0,
+      "uniqueness %": 100.0,
+      "validity %": 100.0,
+      "label consistency %": 100.0,
+      "functions in more than one split": 0.0,
+      "rows with CRLF line endings": 0.0,
+      "positives": 645.0,
+      "negatives": 669.0,
+      "prevalence %": 49.09,
+      "negatives per positive": 1.0
+    }
+  },
+  "class_distribution": {
+    "with_p3 train": {
+      "P1": 396.0,
+      "P2": 396.0,
+      "P3": 12422.0,
+      "rows": 13214.0,
+      "positives": 396.0,
+      "prevalence %": 3.0
+    },
+    "with_p3 valid": {
+      "P1": 130.0,
+      "P2": 130.0,
+      "P3": 4856.0,
+      "rows": 5116.0,
+      "positives": 130.0,
+      "prevalence %": 2.54
+    },
+    "with_p3 test": {
+      "P1": 118.0,
+      "P2": 121.0,
+      "P3": 4308.0,
+      "rows": 4547.0,
+      "positives": 118.0,
+      "prevalence %": 2.6
+    },
+    "without_p3 train": {
+      "P1": 394.0,
+      "P2": 407.0,
+      "P3": 0.0,
+      "rows": 801.0,
+      "positives": 394.0,
+      "prevalence %": 49.19
+    },
+    "without_p3 valid": {
+      "P1": 134.0,
+      "P2": 133.0,
+      "P3": 0.0,
+      "rows": 267.0,
+      "positives": 134.0,
+      "prevalence %": 50.19
+    },
+    "without_p3 test": {
+      "P1": 117.0,
+      "P2": 129.0,
+      "P3": 0.0,
+      "rows": 246.0,
+      "positives": 117.0,
+      "prevalence %": 47.56
+    }
+  },
+  "truncated_pct_with_p3": 13.4,
+  "warehouse_rows": {
+    "dataset_version": 2,
+    "label_partition": 3,
+    "cwe": 1452,
+    "vcs_commit": 839,
+    "java_function": 24288,
+    "quality_issue": 756,
+    "experiment_run": 0,
+    "prediction": 0,
+    "metric": 0
+  }
+}

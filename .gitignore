@@ -1,0 +1,9 @@
+checkpoints/
+data/
+defence_speech.md
+s.md
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
+~$*

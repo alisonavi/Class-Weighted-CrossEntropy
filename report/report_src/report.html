@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midterm Project, Group 9 Topic: Java Vulnerability Detection with CodeBERT and Class-Weighted Cross-Entropy</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; @bottom-center { content: counter(page); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 9pt; color: #777; } }
+  @page :first { @bottom-center { content: none; } }
+  @page wide { size: A4 landscape; margin: 12mm 14mm; @bottom-center { content: counter(page); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 9pt; color: #777; } }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1a1a1a; margin: 0; }
+  .wide { page: wide; width: 269mm; }
+  .wide h2 { margin-top: 0; }
+  .wide figure { margin: 6px 0 0; }
+  .wide figure img { max-height: 158mm; object-fit: contain; object-position: left top; }
+  h1 { font-size: 18pt; margin: 0 0 4px; }
+  h2 { font-size: 13.5pt; margin: 22px 0 8px; border-bottom: 1.5px solid #333; padding-bottom: 3px; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; }
+  h2, h3 { page-break-after: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9pt; page-break-inside: avoid; }
+  th, td { border: 1px solid #999; padding: 3px 6px; vertical-align: top; }
+  th { background: #e9e9e9; text-align: left; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  td.c, th.c { text-align: center; }
+  tr { page-break-inside: avoid; }
+  tr.primary td { background: #eef4fd; }
+  table.small { font-size: 8pt; }
+  table.small th, table.small td { padding: 2px 4px; }
+  pre { background: #f4f4f4; border: 1px solid #ccc; padding: 8px 10px; font-size: 7.8pt; line-height: 1.3; white-space: pre-wrap; word-break: break-word; }
+  pre.keep { page-break-inside: avoid; }
+  .keep { page-break-inside: avoid; }
+  code { font-family: Menlo, Consolas, monospace; font-size: 8.6pt; background: #f0f0f0; padding: 0 3px; }
+  .note { background: #fff8e1; border-left: 4px solid #e0a800; padding: 6px 10px; margin: 10px 0; page-break-inside: avoid; }
+  .find { background: #eef4fd; border-left: 4px solid #2b6cb0; padding: 6px 10px; margin: 10px 0; page-break-inside: avoid; }
+  .formula { text-align: center; font-family: "Times New Roman", serif; font-size: 12pt; margin: 8px 0; }
+  ul, ol { margin: 4px 0 8px 18px; padding: 0; } li { margin-bottom: 3px; }
+  .pb { page-break-before: always; }
+  .small { font-size: 9pt; color: #444; }
+  figure { margin: 10px 0 14px; page-break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid #e1e0d9; }
+  figcaption { font-size: 9pt; color: #444; margin-top: 4px; }
+  .title-page { height: 230mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
+  .title-page h1 { font-size: 24pt; line-height: 1.25; margin-bottom: 16px; }
+  .title-page .sub { font-size: 13pt; color: #444; margin-bottom: 40px; }
+  .title-page .who { font-size: 11pt; line-height: 2; }
+  a { color: #1c5cab; }
+</style>
+</head>
+<body>
+
+<div class="title-page">
+  <div class="sub">KBTU, School of Information Technologies and Engineering<br>MSITM 5134, Management of Organizational Data</div>
+  <h1>Midterm Project 2026, Group 9 Topic<br>Java Vulnerability Detection with CodeBERT and Class-Weighted Cross-Entropy</h1>
+  <div class="sub">A partial reproduction of Shestov et al. (2025), with the data managed from download to decision</div>
+  <div class="who">
+    <b>Student:</b> Bekzat Saulebay (25MD0294), individual work on the Group 9 topic<br>
+    <b>Lecturer:</b> Seralina Nazgul Tynybekkyzy<br>
+    <b>Date:</b> {{DATE}}<br>
+    <b>Data:</b> X1 dataset of Shestov et al., GitHub <code>rmusab/vul-llm-finetune</code>, commit <code>862ed17</code><br>
+    <b>Files:</b> <code>data_pipeline.py</code>, <code>train.py</code>, <code>alternative.py</code>, <code>baselines.py</code>, <code>evaluate.py</code>, <code>demo.py</code>, <code>midterm_project.ipynb</code>, <code>config.json</code>, <code>requirements.txt</code>, <code>README.md</code>
+  </div>
+</div>
+
+<h2>1. Task and what I did</h2>
+<p>The Group 9 topic is to detect vulnerable Java functions with CodeBERT and a class-weighted cross-entropy loss, as a partial reproduction of the study by Shestov et al. (2025). I did the whole project on my own. The task also asks to manage the data through its whole lifecycle and to show how governance, quality, integration, security and analytics affect the model. The report follows that order: one section for each lecture, then the model, the results, and what an organization should do with them.</p>
+<p>The task table gives "CodeBERT + Class-Weighted Loss /" as the alternative method for Group 9, and the part after the slash is empty. I read it as the light version of the same idea: CodeBERT is frozen and only turns each function into a vector, and a small classifier is trained on these vectors with the same class weights. The primary method ran on my laptop without problems, so I did not have to switch. I ran the alternative anyway, because the project objective asks to compare the two on quality, cost and risk.</p>
+<p>My research question comes from the paper. The authors write that plain class weighting did not work for their large model, so they moved on to focal loss and sample weights. I test whether class weighting helps CodeBERT, a model of the same family as ContraBERT, the smaller model the paper compares against, and what the answer means for an organization that wants to use such a model.</p>
+<p>What I built:</p>
+<ul>
+<li>a data pipeline that downloads the dataset at a fixed commit, checks it, cleans it and loads it into a SQLite warehouse that follows my ER model;</li>
+<li>CodeBERT fine-tuned with class-weighted cross-entropy, two ablations (no weights, milder weights) and one run on the balanced version of the dataset;</li>
+<li>the alternative method and three simple reference models;</li>
+<li>an evaluation with 95% confidence intervals, charts and a live demo;</li>
+<li>governance and security rules that the code enforces, not only describes.</li>
+</ul>
+<div class="find"><b>Main results</b>
+<ul style="margin-bottom:0">
+<li>CodeBERT with class-weighted cross-entropy reached a test ROC AUC of {{R_P_ROC}} and an F1 of {{R_P_F1}}, the same as the paper's CodeBERT-style baseline (0.85 and 0.22).</li>
+<li>Class weighting did not help. The same model without weights was at least as good (ROC AUC {{R_PL_ROC}}, F1 {{R_PL_F1}}). The weights only move the decision threshold.</li>
+<li>Accuracy depends on the threshold: {{R_P_ACC}} with the paper's rule, {{R_P_ACC05}} at 0.5. A model that flags nothing reaches {{R_MAJORITY_ACC}}, so the 93% target says little on this data.</li>
+<li>No model can tell a vulnerable function from its own fixed version (ROC AUC about 0.5). The models learn which code a fix touched, and a simple TF-IDF model does as well as CodeBERT.</li>
+<li>As a triage aid the model still helps: reading the top 10% of functions finds {{R_BUDGET_10}} of the vulnerable ones ({{R_PL_BUDGET_10}} without weights).</li>
+</ul></div>
+<div class="wide">
+<h2>2. Data lifecycle and information value chain (Lecture 1)</h2>
+<figure><img src="../../diagrams/lifecycle.svg" alt="data lifecycle"><figcaption>Figure 1. The data lifecycle of the project, with the stages named in the task, and the information value chain with my example at each step.</figcaption></figure>
+<p class="small" style="margin:10px 0 0">Table 1. Each stage mapped to its DAMA-DMBOK knowledge area and to a standard or framework from Lecture 1.</p>
+<table class="small">
+<tr><th style="width:15%">Stage</th><th style="width:24%">DAMA-DMBOK knowledge area</th><th style="width:22%">Standard or framework</th><th>What it means in my project</th></tr>
+<tr><td>Acquisition</td><td>Data Integration and Interoperability; Metadata Management</td><td>ISO 8000 (provenance); ISO/IEC 27001 (supplier integrity)</td><td>source commit, URL and SHA-256 recorded for every file I take in</td></tr>
+<tr><td>Validation</td><td>Data Quality</td><td>ISO 8000; ISO/IEC 25012 quality model</td><td>rules R1 to R5, each with a fixed action; quarantine instead of guessing</td></tr>
+<tr><td>Storage</td><td>Data Storage and Operations; Data Security</td><td>ISO/IEC 27001</td><td>read-only raw zone, one warehouse file that only its owner can open</td></tr>
+<tr><td>Transformation</td><td>Data Modeling and Design; Reference and Master Data</td><td>ISO/IEC 11179 (metadata)</td><td>the label comes from one reference table; CWE ids are checked against MITRE</td></tr>
+<tr><td>Training</td><td>Data Science (the DMBOK chapter on big data and data science)</td><td>NIST AI RMF; ISO/IEC 42001</td><td>one configuration file, fixed seed, pinned model revision, a summary for every run</td></tr>
+<tr><td>Evaluation</td><td>Data Warehousing and Business Intelligence</td><td>NIST AI RMF ("measure")</td><td>metrics with confidence intervals, results stored next to the data they describe</td></tr>
+<tr><td>Retention and deletion</td><td>Data Governance; Document and Content Management</td><td>ISO/IEC 38505 (governance of data)</td><td>a written rule for what I keep, what I delete and why</td></tr>
+</table>
+</div>
+<p>Figure 1 shows the lifecycle. Two choices shape the rest of the project.</p>
+<p>First, every input is pinned. The dataset comes from one commit of the authors' GitHub repository, the CWE catalog is version 4.20, and CodeBERT is one exact revision on Hugging Face. Each archive is checked against its SHA-256 on every run. If the authors change a file, the pipeline stops instead of quietly training on different data.</p>
+<p>Second, the lifecycle is a loop. Problems found during evaluation become quality rules. In Lab 4 a model was tested on code it had already seen in training. That is why rule R5 now removes copies of training functions from the validation and test splits before any model runs.</p>
+<p>Retention follows from pinning. The archives can be downloaded again from the pinned commit, so I keep their hashes for good and the files only while I work. Checkpoints take about 500 MB each. After grading I keep the primary one for the demo and delete the rest. Logs, configuration, metrics and hashes are small and stay.</p>
+<p>The information value chain from Lecture 1 goes from raw data to processed data, information, knowledge, insights, decisions and value. The bottom row of Figure 1 gives my example for each step. A score has no value by itself. It has value when it changes a decision, here the order in which a security team reviews code. This is why section 9 measures how many real vulnerabilities a team finds for a given amount of review work, and not only accuracy.</p>
+
+
+<h2>3. Data governance (Lecture 2)</h2>
+<h3>Ownership and access</h3>
+<p>I do not own the source data. Its owners are the people who published it. I am the custodian of my copy and the owner of what I build from it.</p>
+<table>
+<tr><th style="width:24%">Data asset</th><th style="width:19%">Owner</th><th style="width:22%">My role</th><th>Licence and access</th></tr>
+<tr><td>X1 archives, with and without P3</td><td>dataset authors (GitHub <code>rmusab</code>)</td><td>data steward keeps the pinned copy</td><td>no licence file at the pinned commit (I checked the repository), so I use it for study only and do not redistribute the code</td></tr>
+<tr><td>MITRE CWE catalog 4.20</td><td>MITRE</td><td>reference data, read only</td><td>public; MITRE allows reuse if its copyright notice is kept</td></tr>
+<tr><td>CodeBERT base model</td><td>Microsoft</td><td>ML engineer loads the pinned revision</td><td>MIT licence on Microsoft's CodeBERT GitHub repository; the Hugging Face page names no licence</td></tr>
+<tr><td>Warehouse, clean data, quality log</td><td>me (the student)</td><td>data steward</td><td>only me</td></tr>
+<tr><td>Fine-tuned models and predictions</td><td>me (the student)</td><td>ML engineer</td><td>me and the lecturer; weights are not uploaded</td></tr>
+</table>
+<h3>Responsibilities (RACI)</h3>
+<p>I used the RACI format and the five roles from Lecture 2. In a company these are different people. In this project I did all five jobs myself, so the table shows how the work would be shared in a real team.</p>
+<table class="small">
+<tr><th>Task</th><th class="c">Data owner</th><th class="c">Data steward</th><th class="c">Data / ML engineer</th><th class="c">Compliance</th><th class="c">Security</th></tr>
+<tr><td>Approve the use of the dataset and the model (purpose, licence)</td><td class="c">A</td><td class="c">C</td><td class="c">I</td><td class="c">R</td><td class="c">C</td></tr>
+<tr><td>Pin sources and check their SHA-256</td><td class="c">I</td><td class="c">A</td><td class="c">R</td><td class="c">I</td><td class="c">C</td></tr>
+<tr><td>Run the quality rules and review quarantined labels</td><td class="c">C</td><td class="c">A</td><td class="c">R</td><td class="c">I</td><td class="c">C</td></tr>
+<tr><td>Train and evaluate models, keep a summary of every run</td><td class="c">I</td><td class="c">C</td><td class="c">A/R</td><td class="c">I</td><td class="c">C</td></tr>
+<tr><td>Set the threshold and approve use in code review</td><td class="c">A</td><td class="c">I</td><td class="c">C</td><td class="c">I</td><td class="c">R</td></tr>
+<tr><td>Check personal data and legal exposure (commit authors, data location)</td><td class="c">I</td><td class="c">C</td><td class="c">I</td><td class="c">A</td><td class="c">R</td></tr>
+<tr><td>Keep and delete checkpoints and data copies</td><td class="c">A</td><td class="c">R</td><td class="c">C</td><td class="c">C</td><td class="c">I</td></tr>
+</table>
+<p class="small">R = responsible (does it), A = accountable (owns the result), C = consulted, I = informed.</p>
+<h3>Usage policy</h3>
+<ol>
+<li><b>Purpose.</b> The data and the models are used only for this course, to study vulnerability detection.</li>
+<li><b>No redistribution.</b> The source repository has no licence, so my submission does not contain the code samples. It pins the commit, and the pipeline downloads the files.</li>
+<li><b>A triage aid, never a gate.</b> No code is called safe because the model did not flag it.</li>
+<li><b>No analysis of people.</b> Commit ids lead to the developers who wrote the code. I never look up authors and never rank developers by their bugs.</li>
+<li><b>Labels are not edited by hand.</b> Conflicting labels go to quarantine with the reason and wait for a security expert.</li>
+<li><b>No model without a record.</b> Every model has a run summary with the data version, configuration, training time and SHA-256 of its weights. A model without one is not used.</li>
+</ol>
+<h3>Ethics and law</h3>
+<ul>
+<li><b>Labels are noisy.</b> They come from a rule: the function before a fix is vulnerable, the same function after the fix is not. A fix can also change unrelated code, and a "fixed" function can still be vulnerable. Croft et al. (2023) found such errors in many vulnerability datasets. Even a perfect score would not mean a perfect detector.</li>
+<li><b>Dual use.</b> A model that finds vulnerabilities helps an attacker as much as a defender. I only use public vulnerabilities that were fixed long ago, and I treat any list of predicted vulnerable functions as restricted data (section 7).</li>
+<li><b>False confidence.</b> A model with 97% accuracy sounds safe to a manager. Section 9 shows why that number says almost nothing on this data.</li>
+<li><b>Personal data.</b> A commit hash is not a name, but it leads to the author's name and email in Git. Under GDPR and the Kazakhstan Law No. 94-V on personal data, that makes it indirectly identifying data. I keep commit ids only because the split depends on them, and I never fetch anything about the authors. If a company ran this model on its own code, the results would point at its own staff, and the Kazakh law would also require that this data stays on servers in Kazakhstan.</li>
+</ul>
+
+<h2>4. Data model (Lecture 3)</h2>
+<p>Figure 2, on the first landscape page after section 5, is the conceptual model. I built the warehouse straight from it: every entity is a table with the same keys, and SQLite enforces the foreign keys. The model has two parts, the data (blue) and the experiments (orange), and they meet only in <code>prediction</code>.</p>
+<ul>
+<li><b>The label is stored once.</b> The source files carry both <code>target</code> and <code>status</code>, but the status already decides the label: P1 (vulnerable) means 1, P2 (fixed) and P3 (unchanged) mean 0. Keeping both in the function table is a transitive dependency. It breaks third normal form and lets the two disagree. So the label lives in <code>label_partition</code>, and the view <code>model_input</code> joins it back for training.</li>
+<li><b>A commit is an entity.</b> The authors split the data by commit, and a commit links the vulnerable and the fixed version of a function. The {{D_COMMITS}} commit hashes come in 8 different lengths (Lab 3), so I never join on them across sources. I use a fingerprint of the code for that.</li>
+<li><b>Business rules are constraints.</b> A split is train, valid or test. A label is 0 or 1. A review status is clean, needs_expert_review or duplicate. A probability is between 0 and 1. A SHA-256 has 64 characters. The database refuses any row that breaks these rules.</li>
+<li><b>Every row has lineage.</b> <code>source_file</code> and <code>source_line</code> point to the exact line in the original JSONL file, and every change made to a row is in <code>quality_issue</code>.</li>
+</ul>
+
+<h2>5. ETL and integration into the model workflow (Lecture 4)</h2>
+<p>Figure 3, on the second landscape page after this section, shows the whole system. Data moves from left to right, and evaluation writes its results back into the warehouse.</p>
+<p><b>Extract.</b> <code>data_pipeline.py</code> downloads the two archives and the CWE catalog, checks the SHA-256 of each file, unpacks the archives and makes the raw files read-only. It reads the six JSONL files into one table and adds the source file and line to every row: {{D_ROWS_TOTAL}} rows.</p>
+<p><b>Transform.</b> The cleaning rules are in section 6. The pipeline also counts CodeBERT tokens for every function, so I know before training how much code the 512-token limit cuts off.</p>
+<p><b>Load.</b> The pipeline rebuilds the warehouse from scratch on every run. A full reload takes a few seconds and is simpler than an incremental load, because the source is a fixed snapshot.</p>
+{{T_WAREHOUSE}}
+<div class="wide">
+<figure><img src="../../diagrams/er_model.svg" alt="ER diagram"><figcaption>Figure 2. ER model of the dataset, the Java functions, the vulnerability labels and the experiment results (section 4). The warehouse has exactly these tables, keys and foreign keys.</figcaption></figure>
+</div>
+<div class="wide">
+<figure><img src="../../diagrams/architecture.svg" alt="system architecture"><figcaption>Figure 3. System architecture (section 5). Data moves from left to right; evaluation writes its results back into the warehouse. The bottom row lists the controls that apply to every step.</figcaption></figure>
+</div>
+<p><b>Integration with the model.</b> The models do not read files. <code>train.py</code> gets its data with one SQL query on the view <code>model_input</code>, which only returns clean rows. A quarantined or duplicate row cannot reach training by mistake. After training, <code>evaluate.py</code> writes every run, every prediction and every metric back into the warehouse. The table of recall by CWE in section 9 is a SQL join of predictions, functions and the MITRE catalog.</p>
+
+
+<h2>6. Data quality (Lecture 5)</h2>
+<p>At first sight the data is clean: no missing values, every label is valid, every function parses as Java. The real problems are about meaning, not format. Table 3 lists my rules. I never change a label and never guess one. A row with a doubtful label goes to quarantine with its reason and stays in the warehouse for an expert.</p>
+{{T_RULES}}
+<p>Three results matter. {{D_CONFLICT_FUNCS}} functions have the label "vulnerable" in one version of the dataset and "not vulnerable" in the other, and 3 more rows have identical code with both labels. {{D_LEAK_ROWS}} rows in validation or test were copies of a function already in an earlier split, so a model would have been tested on code it had seen; I removed the later copy. And 659 functions had Windows line endings, which I changed to the usual Unix ones.</p>
+{{T_QUALITY}}
+<h3>Class distribution</h3>
+<figure><img src="../../out/fig_class_balance.png" alt="class balance"><figcaption>Figure 4. Share of vulnerable (P1), fixed (P2) and unchanged (P3) functions in each split of X1 with P3, after cleaning.</figcaption></figure>
+<p>After cleaning, X1 with P3 has {{D_POS_WITH}} vulnerable functions out of {{D_CLEAN_WITH}}, about one in {{D_ONE_IN}}. The test split has only {{D_TEST_POS}} of them. This has two consequences. A model that always says "not vulnerable" is right {{R_MAJORITY_ACC}} of the time on the test split. And every recall or F1 on the test split rests on about a hundred cases, so I give confidence intervals. The balanced version (X1 without P3) has {{D_CLEAN_WITHOUT}} functions, about half of them vulnerable.</p>
+<h3>Length of the code</h3>
+<figure><img src="../../out/fig_token_lengths.png" alt="token lengths"><figcaption>Figure 5. Length of each function in CodeBERT tokens, by partition (X1 with P3, after cleaning).</figcaption></figure>
+<p>Vulnerable and fixed functions are long. Their median lengths are {{D_MED_P1}} and {{D_MED_P2}} tokens, and about half of them are longer than CodeBERT's limit of 512 tokens, so their end is cut off. The unchanged P3 functions have a median of only {{D_MED_P3}} tokens. This matters in two ways. The model may never see the line with the bug. And length alone separates P3 from P1 quite well, so a model can score high by learning that long code is risky. The length-only model in section 9 measures how far that gets.</p>
+
+<h2>7. Data security (Lecture 6)</h2>
+<p>The dataset is public, but the project still has assets to protect. In a company, the same pipeline would run on the company's own code, and its output would be a list of the places where that code is weak.</p>
+<table>
+<tr><th style="width:30%">Asset</th><th style="width:17%">Level</th><th>Why</th></tr>
+<tr><td>Pinned archives, CWE catalog</td><td>Public</td><td>published by their owners</td></tr>
+<tr><td>Warehouse, clean data, quality log</td><td>Internal</td><td>a copy of public code, but with my labels and decisions, and no licence to share the code</td></tr>
+<tr><td>Configuration, logs, metrics, report</td><td>Internal</td><td>shared with the lecturer</td></tr>
+<tr><td>Fine-tuned weights</td><td>Internal (Confidential in a company)</td><td>weights trained on private code can leak parts of that code</td></tr>
+<tr><td>Predictions on a company's own code</td><td>Restricted</td><td>a ranked list of likely vulnerable functions is a map for an attacker</td></tr>
+</table>
+<h3>Controls I built in</h3>
+<table>
+<tr><th style="width:20%">Control</th><th>How</th><th style="width:28%">Where to see it</th></tr>
+<tr><td>Integrity of inputs</td><td>SHA-256 of both archives and the CWE catalog is checked on every run; a mismatch stops the pipeline</td><td><code>config.json</code>, <code>data_pipeline.download</code></td></tr>
+<tr><td>Read-only raw zone</td><td>raw files are set to mode 444 right after download</td><td>notebook, section 6</td></tr>
+<tr><td>Least privilege</td><td>the warehouse file has mode 600; training, the alternative and the demo open it read-only</td><td>notebook, section 6: a DELETE on the read-only connection is refused</td></tr>
+<tr><td>Safe model loading</td><td>CodeBERT is published as a pickle <code>.bin</code> file. <code>transformers</code> loads it with <code>weights_only=True</code> and refuses torch older than 2.6 because of CVE-2025-32434. I use torch 2.14.1 and a pinned revision</td><td><code>requirements.txt</code>, <code>config.json</code></td></tr>
+<tr><td>My own models</td><td>saved as safetensors, which cannot hold code; the SHA-256 goes into <code>run_summary.json</code>, and <code>demo.py</code> refuses a file whose hash differs</td><td><code>demo.py</code>, notebook section 6</td></tr>
+<tr><td>No hidden network calls</td><td>see the finding below</td><td><code>common.py</code></td></tr>
+<tr><td>No secrets in code</td><td>no tokens or passwords in code or configuration; no Hugging Face token is needed</td><td>all files</td></tr>
+</table>
+<div class="find"><b>A library that calls home.</b> During a test run I saw a warning that my training script was sending requests to the Hugging Face Hub, although the model was already in the local cache. I looked in the <code>transformers</code> source: when it loads a <code>.bin</code> checkpoint, it starts a background thread that asks the Hub for a safetensors copy and can ask Hugging Face's conversion service to make one. For a company that trains on private code, a library that contacts an outside service on its own is a real risk. I switched it off (<code>DISABLE_SAFETENSORS_CONVERSION=1</code>), turned off telemetry and load models from the local cache only. After the change the warning was gone. I did not check the traffic with a network monitor.</div>
+<h3>Risks</h3>
+<table>
+<tr><th style="width:25%">Risk</th><th style="width:26%">What happens</th><th style="width:16%">Likelihood / impact</th><th>Control</th></tr>
+<tr><td>The dataset changes upstream</td><td>a different model, and nobody notices</td><td>medium / high</td><td>pinned commit and SHA-256</td></tr>
+<tr><td>Wrong or poisoned labels</td><td>the model learns the wrong thing</td><td>medium / medium</td><td>quarantine, audit log, labels never edited by hand</td></tr>
+<tr><td>A malicious model file</td><td>code runs on my machine when the model loads</td><td>low / high</td><td>pinned revision, <code>weights_only</code>, safetensors for my own files</td></tr>
+<tr><td>A library contacts outside services</td><td>code or metadata leaves the machine</td><td>medium / high for private code</td><td>conversion and telemetry off, cache only</td></tr>
+<tr><td>The prediction list leaks</td><td>attackers learn where the weak spots are</td><td>low / high</td><td>Restricted level, security team only</td></tr>
+<tr><td>People trust the model too much</td><td>missed vulnerabilities reach production</td><td>high / high</td><td>triage aid only; recall reported next to accuracy</td></tr>
+<tr><td>Results are used against developers</td><td>unfair blame, misuse of personal data</td><td>low / medium</td><td>usage policy rule 4, no author lookups</td></tr>
+</table>
+
+<h2>8. Method and experiments</h2>
+<h3>Primary method: CodeBERT with class-weighted cross-entropy</h3>
+<p>CodeBERT (Feng et al., 2020) is a RoBERTa encoder with 125 million parameters, pretrained on source code and its documentation. I put the standard classification head on top (a small two-layer network on the first token) and fine-tune all weights.</p>
+<p>Plain cross-entropy treats every function the same. With one vulnerable function in {{D_ONE_IN}}, a model can keep the loss low by mostly saying "not vulnerable". Class-weighted cross-entropy multiplies the loss of each example by the weight of its class:</p>
+<p class="formula">L = &minus; &Sigma;<sub>i</sub> w<sub>y<sub>i</sub></sub> log p(y<sub>i</sub> | x<sub>i</sub>) / &Sigma;<sub>i</sub> w<sub>y<sub>i</sub></sub>, &nbsp;&nbsp; w<sub>c</sub> = N / (2 N<sub>c</sub>)</p>
+<p>N is the number of training functions and N<sub>c</sub> the number in class c. The training split has {{D_TRAIN_N}} functions, {{D_TRAIN_POS}} of them vulnerable, so the weights are {{W0}} for "not vulnerable" and {{W1}} for "vulnerable". One vulnerable function counts as much as {{W_RATIO}} others. The milder ablation uses the square root of these weights ({{W0S}} and {{W1S}}).</p>
+<h3>Protocol</h3>
+<p>I follow the protocol of the paper (appendix B): train for a fixed number of epochs, keep the checkpoint with the best ROC AUC on the validation split, choose the threshold that gives the best F1 on the validation split, and only then score the test split, once. The test split plays no part in any choice.</p>
+{{T_CONFIG}}
+<h3>Alternative method and reference models</h3>
+<p><b>Alternative.</b> CodeBERT is frozen. One pass over the data turns every function into a 768-number vector (the mean of CodeBERT's last layer over all tokens). A logistic regression with the same balanced class weights is trained on these vectors; its strength C is chosen on the validation split. Only {{ALT_PARAMS}} numbers are trained instead of {{PRIMARY_PARAMS}}.</p>
+<p><b>Reference models.</b> Three simple models show what the numbers mean. "Always not vulnerable" shows what accuracy is worth on this data. "Code length only" is a logistic regression on the length of the function and nothing else. "TF-IDF" is the class-weighted logistic regression on code tokens from Lab 4.</p>
+{{T_RUNS}}
+{{TRAINING_CURVES}}
+
+<h2>9. Results and what they mean (Lecture 7)</h2>
+<h3>9.1 The test results</h3>
+<p>Table 7 shows every model on the test split of X1 with P3. The primary model reaches a ROC AUC of {{R_P_ROC}} (95% interval {{R_P_ROC_CI}}) and an F1 of {{R_P_F1}}. The paper reports 0.85 and 0.22 for ContraBERT, the CodeBERT-style model it compares against, so my partial reproduction lands on the same numbers.</p>
+{{T_METRICS}}
+<p>The surprise is the simple models. TF-IDF with a logistic regression, the Lab 4 baseline, reaches a ROC AUC of {{R_TF_ROC}}, and its F1 ({{R_TF_F1}}) and PR AUC are clearly better than CodeBERT's (Table 9). A model that sees nothing but the length of the code reaches {{R_LEN_ROC}}. On this benchmark, a transformer with 125 million parameters does not beat a bag of words. Section 9.4 shows why.</p>
+<figure><img src="../../out/fig_roc_pr.png" alt="ROC and precision-recall curves"><figcaption>Figure 7. ROC and precision-recall curves on the test split. The ROC curves look strong; the precision-recall curves show how few flagged functions are really vulnerable.</figcaption></figure>
+<figure><img src="../../out/fig_confusion.png" alt="confusion matrices"><figcaption>Figure 8. Confusion matrices on the test split, at the threshold each model chose on validation.</figcaption></figure>
+
+<h3>9.2 The accuracy target</h3>
+<p>The task asks for an accuracy of at least 93%. On this data the target says little, because the model that never flags anything reaches {{R_MAJORITY_ACC}}. What a real model reaches depends on its threshold, so Table 8 gives three operating points, each fixed before the test split was scored.</p>
+{{T_THRESHOLD}}
+<p>With the paper's rule (best F1 on validation) the model flags {{R_P_FLAG}} of the {{D_TEST_N}} test functions, and its accuracy is {{R_P_ACC}}, below the target. When I pick the threshold that gives 93% on validation instead, test accuracy is still only {{R_P_ACC_TARGET}}. The reason is a shift between the splits: at the same threshold the model flags {{R_VALID_FLAG}} of the validation functions but {{R_TEST_FLAG}} of the test functions, because the test commits come from other code. At the default threshold 0.5 the model flags {{R_P_FLAG05}} functions and reaches {{R_P_ACC05}}, so the target is met, but recall drops from {{R_P_REC}} to {{R_P_REC05}}.</p>
+<div class="find"><b>The 93% target can be met, but only by flagging less.</b> On this data accuracy mostly measures how few functions a model flags. For a security team the useful question is how many real vulnerabilities it finds for the review work it can afford (section 9.5).</div>
+
+<h3>9.3 Does class weighting help?</h3>
+<p>This was my research question, and the answer is no. Table 9 compares the two runs on the same 2,000 resamples of the test split. The model trained without weights ranks the functions at least as well: its ROC AUC is {{R_PL_ROC}} against {{R_P_ROC}}, and its PR AUC {{R_PL_PR}} against {{R_P_PR}}. Neither difference is clear, because both intervals include zero. Its F1 at the tuned threshold is clearly higher ({{R_PL_F1}} against {{R_P_F1}}), and it finds more vulnerable functions at every review budget (Table 10). It was also better on validation after every epoch (Figure 6).</p>
+<p>What the weights do is move the scores. Without weights the model gives low scores to almost everything: at the default threshold 0.5 it flags only {{R_PL_FLAG05}} test functions. With weights it flags {{R_P_FLAG05}}. The paper's protocol picks the threshold on validation anyway, so this shift buys nothing; the plain model simply gets a lower threshold ({{R_PL_THR}} against {{R_P_THR}}). The weights also make the probabilities less honest: the plain model's validation log loss stays near 0.10, while the weighted one rises to 0.22 after the third epoch. The milder square-root weights ({{W0S}} and {{W1S}}) change nothing here: test ROC AUC {{R_SQ_ROC}} and F1 {{R_SQ_F1}}, with no clear difference from the full weights (Table 9). More weight never helped, and no weight did best.</p>
+<div class="find"><b>Class weighting did not help CodeBERT, the same answer the paper gives for its large model.</b> The weights act like a lower threshold built into training. Choosing the threshold on validation gives the same effect without retraining, and the model trained without weights was at least as good on every measure.</div>
+{{T_PAIRED}}
+<figure><img src="../../out/fig_method_comparison.png" alt="ROC AUC of all models with intervals and the paper's numbers"><figcaption>Figure 9. Test ROC AUC of every model with its 95% bootstrap interval, next to the numbers reported by Shestov et al. (diamonds).</figcaption></figure>
+
+<h3>9.4 What the model actually learned</h3>
+<figure><img src="../../out/fig_partition_scores.png" alt="scores by partition"><figcaption>Figure 10. Scores of the primary model on the test split, by partition. The vulnerable functions (blue) and their fixed versions (dark gray) get almost the same scores.</figcaption></figure>
+<p>Figure 10 splits the test functions by partition. At its threshold the model flags {{R_FLAG_P1}} of the vulnerable functions and {{R_FLAG_P2}} of their fixed versions, but only {{R_FLAG_P3}} of the unchanged functions. On vulnerable functions against their own fixed versions its ROC AUC is {{R_P_P1P2}}, which is chance. TF-IDF and the length model are at chance there too (last column of Table 7).</p>
+<p>So the model has learned to tell code that a fix commit touched from code that no fix touched. It has not learned what makes code vulnerable. This fits what section 6 found: unchanged functions are short, and a vulnerable function and its fix differ in a few tokens, often after the 512-token cut. Most of the high ROC AUC on X1 with P3 comes from the easy P3 negatives. The paper shows the same from the other side: on the balanced dataset, where every negative is a fixed function, its best model reaches only 0.69.</p>
+
+<h3>9.5 What a review team gets</h3>
+<figure><img src="../../out/fig_review_budget.png" alt="share of vulnerable functions found against share of code reviewed"><figcaption>Figure 11. Share of vulnerable test functions found when a reviewer reads the functions in score order.</figcaption></figure>
+<p>A model like this is useful as a way to order work. If a team reads the top 5% of test functions by score ({{R_BUDGET_5_N}} functions), it finds {{R_BUDGET_5}} of the vulnerable ones. Reading 10% finds {{R_BUDGET_10}}, and reading 20% finds {{R_BUDGET_20}}. In random order the team would find 5%, 10% and 20%. TF-IDF does a little better at every budget (Table 10).</p>
+{{T_BUDGET}}
+<h3>9.6 Recall by type of weakness</h3>
+<p>Table 11 comes straight from the warehouse: one SQL query joins predictions, functions and the MITRE catalog. Each CWE has only a handful of test cases, so the table is a hint, not a result. The model finds about half of the injection-type weaknesses (cross-site scripting, XML external entities, path traversal) but almost none of the access-control ones: {{R_CWE264}} of the CWE-264 cases and {{R_CWE352}} of the CSRF cases. Those depend on configuration and on code outside a single function.</p>
+{{T_CWE}}
+<h3>9.7 The balanced dataset</h3>
+<p>On the balanced dataset every negative is the fixed version of a vulnerable function, so there are no easy cases. The same method reaches a test ROC AUC of {{R_BAL_ROC}} here (95% interval {{R_BAL_CI}}). The interval includes 0.5, so I cannot say the model does better than chance. The paper reports 0.66 for ContraBERT and 0.69 for WizardCoder, and I did not reach their number. Likely reasons: ContraBERT is a stronger relative of CodeBERT, the paper tuned its settings on this dataset while I used standard ones, and the training split has only {{D_BAL_TRAIN}} functions. TF-IDF reaches {{R_BAL_TF}}, also close to chance. The F1 of {{R_BAL_F1}} in Table 12 looks good but means little: the best-F1 threshold flags almost every function, and flagging all of them already gives an F1 of {{R_BAL_F1_ALL}} on this split.</p>
+<p>This is section 9.4 again from another side. Telling a vulnerable function from its own fix is the real task, and none of my models can do it.</p>
+{{T_BALANCED}}
+<h3>9.8 Primary method against the alternative</h3>
+<p>The alternative freezes CodeBERT and trains only {{ALT_PARAMS}} numbers. It took {{R_ALT_MIN}} minutes in total, almost all of it one pass of CodeBERT over the data, against {{R_P_MIN}} minutes for the primary method. It is clearly worse: ROC AUC {{R_ALT_ROC}} against {{R_P_ROC}} and F1 {{R_ALT_F1}} against {{R_P_F1}}, both clear differences in Table 9. At a 10% review budget it finds {{R_ALT_BUDGET_10}} of the vulnerable functions, no more than the length-only model. The frozen vectors hold little that a linear model can use for this task; the fine-tuning is where the primary method gets its edge.</p>
+{{T_COST}}
+<p>For an organization the choice depends on what it can run and explain. With a GPU, fine-tuning takes about an hour and gives a model that orders the review queue well. Without one, TF-IDF gives the same ranking quality in {{R_TF_SEC}} seconds on a normal CPU, and its decisions are easier to explain, because each word has a weight. The frozen alternative is the weakest choice: it still needs CodeBERT and a GPU for the vectors, and it ranks no better than code length.</p>
+
+<h2>10. Recommendations</h2>
+<p>These follow from the numbers above and are written for a team that wants to use such a model on its own Java code.</p>
+<ol>
+<li><b>Use the model to order the review queue, never to approve code.</b> Reading the top 10% of functions finds about half of the vulnerable ones; the other half is missed. A function the model does not flag is not safe.</li>
+<li><b>Measure recall at a review budget, not accuracy.</b> At one vulnerable function in 35, accuracy rewards flagging nothing. Agree on how many functions the team can read, and report how many real vulnerabilities that finds. Check the threshold again on the team's own code, because it shifts between sets of commits ({{R_VALID_FLAG}} against {{R_TEST_FLAG}} flagged at the same threshold).</li>
+<li><b>Fix the data before buying a bigger model.</b> The high scores come from the easy negatives, and on this data the paper's 13-billion-parameter model gained only about 0.01 ROC AUC over the CodeBERT-style ContraBERT. Better data would help more: a split by project, expert review of the {{D_QUARANTINED}} quarantined rows and of noisy labels, and a way to read functions longer than 512 tokens.</li>
+<li><b>Pick the cheapest method that is good enough.</b> On this data TF-IDF ranked functions as well as fine-tuned CodeBERT, in seconds on a CPU instead of about 50 minutes on a GPU. The frozen alternative saves time but ranks no better than code length. A bigger model pays off only once the data is good enough for its extra capacity to matter.</li>
+<li><b>Do not add class weights by default; tune the threshold instead.</b> In my runs the weights only moved where 0.5 falls and made the probabilities less reliable. Training without weights and choosing the threshold for the team's review budget was at least as good (F1 {{R_PL_F1}} against {{R_P_F1}}), and a threshold can be changed later without retraining.</li>
+</ol>
+
+<h2>11. Limitations</h2>
+<ul>
+<li><b>One run per setting.</b> Each CodeBERT setting was trained once, with one seed. Training on the MPS GPU is not bit-for-bit repeatable, so a second run would give slightly different numbers. The bootstrap intervals cover the noise from the small test split, not the noise from training. A difference between two runs that is smaller than these intervals should not be read as real.</li>
+<li><b>No split by project.</b> The dataset has no project field, so the split is by commit, as in the paper. Code from the same project can sit in training and in test. On a project the model has never seen, the scores would most likely be lower. The paper names the same threat.</li>
+<li><b>Code is cut at 512 tokens.</b> About half of the vulnerable functions are longer, so the model sees only their beginning. The paper found that a longer context did not help its model on the balanced set, but I did not test this for CodeBERT.</li>
+<li><b>Labels come from a rule.</b> Nobody checked the labels by hand. The 41 quarantined rows are only the conflicts I could detect; wrong labels without a conflicting copy stay in the data.</li>
+<li><b>Not the paper's exact test set.</b> The published test file has {{D_TEST_FILE}} rows while the paper reports {{D_TEST_PAPER}}, and my cleaning removed {{D_TEST_REMOVED}} more. I compare my scores with the numbers printed in the paper; I did not re-run ContraBERT or WizardCoder.</li>
+<li><b>Few hyperparameters tried.</b> I used common CodeBERT settings and did not tune them, because one run takes about an hour on my laptop. The paper tuned its models. All three CodeBERT runs on X1 with P3 had their best validation score in the last of their four epochs, so longer training might help a little.</li>
+</ul>
+
+<h2>12. How to run it</h2>
+<pre class="keep">python3.12 -m venv ~/venvs/mood-midterm && ~/venvs/mood-midterm/bin/pip install -r requirements.txt
+PY=~/venvs/mood-midterm/bin/python
+$PY data_pipeline.py                                # download, check, clean, load (under a minute)
+$PY train.py --run codebert_weighted                # primary method (about {{T_PRIMARY_MIN}} min on an M3 Pro)
+$PY train.py --run codebert_plain                   # same without class weights; also codebert_sqrt,
+$PY train.py --run codebert_weighted_balanced_set   #   codebert_weighted_balanced_set
+$PY alternative.py && $PY baselines.py && $PY evaluate.py
+$PY demo.py --sample 2                              # live demo</pre>
+<p>The notebook <code>midterm_project.ipynb</code> imports the same files and is already executed. The data steps, the baselines, the evaluation and the demo run inside it. Training takes about three hours in total, so the notebook reads the saved training runs from <code>runs/</code> unless <code>RUN_TRAINING</code> is switched on. Every table and chart in this report comes from <code>out/</code>, which that run produced.</p>
+
+
+<h2>13. References</h2>
+<ol class="small">
+<li>Shestov, A., Levichev, R., Mussabayev, R., Maslov, E., Zadorozhny, P., Cheshkov, A., Mussabayev, R., Toleu, A., Tolegen, G., Krassovitskiy, A. (2025). Finetuning large language models for vulnerability detection. <i>IEEE Access</i>, 13, 38889&ndash;38900. doi:10.1109/ACCESS.2025.3546700. Code and data: github.com/rmusab/vul-llm-finetune.</li>
+<li>Feng, Z., Guo, D., Tang, D., Duan, N., Feng, X., Gong, M., Shou, L., Qin, B., Liu, T., Jiang, D., Zhou, M. (2020). CodeBERT: a pre-trained model for programming and natural languages. <i>Findings of EMNLP 2020</i>, 1536&ndash;1547.</li>
+<li>Croft, R., Babar, M. A., Kholoosi, M. M. (2023). Data quality for software vulnerability datasets. <i>ICSE 2023</i>, 121&ndash;133. doi:10.1109/ICSE48619.2023.00022.</li>
+<li>Bhandari, G., Naseer, A., Moonen, L. (2021). CVEfixes: automated collection of vulnerabilities and their fixes from open-source software. <i>PROMISE 2021</i>, 30&ndash;39.</li>
+<li>Ponta, S. E., Plate, H., Sabetta, A., Bezzi, M., Dangremont, C. (2019). A manually-curated dataset of fixes to vulnerabilities of open-source software. <i>MSR 2019</i>, 383&ndash;387.</li>
+<li>Lin, T.-Y., Goyal, P., Girshick, R., He, K., Doll&aacute;r, P. (2017). Focal loss for dense object detection. <i>ICCV 2017</i>, 2999&ndash;3007.</li>
+<li>Efron, B., Tibshirani, R. J. (1993). <i>An Introduction to the Bootstrap</i>. Chapman &amp; Hall.</li>
+<li>MITRE. Common Weakness Enumeration (CWE), version 4.20. cwe.mitre.org.</li>
+<li>DAMA International (2017). <i>DAMA-DMBOK: Data Management Body of Knowledge</i>, 2nd ed. Technics Publications.</li>
+<li>ISO 8000 (data quality); ISO/IEC 11179 (metadata registries); ISO/IEC 25012:2008 (data quality model); ISO/IEC 27001:2022 (information security); ISO/IEC 38505-1:2017 (governance of data); ISO/IEC 42001:2023 (AI management systems).</li>
+<li>NIST (2023). <i>Artificial Intelligence Risk Management Framework (AI RMF 1.0)</i>, NIST AI 100-1.</li>
+<li>Regulation (EU) 2016/679 (General Data Protection Regulation). Law of the Republic of Kazakhstan No. 94-V of 21 May 2013 "On personal data and their protection".</li>
+<li>NVD. CVE-2025-32434: remote code execution in <code>torch.load</code> with <code>weights_only=True</code> before PyTorch 2.6.0.</li>
+<li>Seralina, N. T. (2026). <i>Management of Organizational Data</i>, Lectures 1, 2 and 4. KBTU.</li>
+</ol>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+{
+  "project": "Group 9: CodeBERT + class-weighted cross-entropy for Java vulnerability detection",
+  "seed": 42,
+  "data": {
+    "repository": "rmusab/vul-llm-finetune",
+    "commit": "862ed17bd935aa86e1e1e95966fa84ecdaa88888",
+    "archives": {
+      "with_p3": {
+        "path": "Datasets/with_p3/java_k_1_strict_2023_06_30.tar.gz",
+        "sha256": "76e1bc8dd360d122b8939569bf57919df4f388d37d3f1762b0088732ba919e58"
+      },
+      "without_p3": {
+        "path": "Datasets/without_p3/java_k_1_strict_2023_07_03.tar.gz",
+        "sha256": "660e3d1d9b60248ab597d8465878330db83d028a8974ca99164671451ab1aba1"
+      }
+    },
+    "cwe_catalog": {
+      "version": "4.20",
+      "url": "https://cwe.mitre.org/data/xml/cwec_v4.20.xml.zip",
+      "sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50"
+    }
+  },
+  "model": {
+    "name": "microsoft/codebert-base",
+    "revision": "3b0952feddeffad0063f274080e3c23d75e7eb39",
+    "max_length": 512
+  },
+  "training": {
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_grad_norm": 1.0,
+    "bucket_size": 50
+  },
+  "runs": {
+    "codebert_weighted": {
+      "role": "primary method",
+      "variant": "with_p3",
+      "class_weights": "balanced",
+      "epochs": 4
+    },
+    "codebert_plain": {
+      "role": "ablation, paper baseline without weights",
+      "variant": "with_p3",
+      "class_weights": "none",
+      "epochs": 4
+    },
+    "codebert_sqrt": {
+      "role": "ablation, milder weights",
+      "variant": "with_p3",
+      "class_weights": "sqrt",
+      "epochs": 4
+    },
+    "codebert_weighted_balanced_set": {
+      "role": "same method on the balanced dataset",
+      "variant": "without_p3",
+      "class_weights": "balanced",
+      "epochs": 10
+    }
+  },
+  "alternative": {
+    "name": "frozen_codebert_lr",
+    "role": "alternative method",
+    "variant": "with_p3",
+    "pooling": "mean",
+    "classifier": "logistic regression, class_weight=balanced",
+    "c_grid": [0.01, 0.1, 1.0, 10.0]
+  },
+  "evaluation": {
+    "threshold_rule": "maximum F1 on the validation split",
+    "bootstrap_samples": 2000,
+    "accuracy_target": 0.93
+  }
+}

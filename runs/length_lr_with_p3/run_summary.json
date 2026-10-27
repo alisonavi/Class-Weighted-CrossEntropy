@@ -1,0 +1,12 @@
+{
+  "run": "length_lr_with_p3",
+  "role": "reference: how far a model gets on length alone",
+  "method": "logistic regression on the length of the code only",
+  "variant": "with_p3",
+  "class_weights_rule": "balanced",
+  "train_seconds": 0.01,
+  "trainable_parameters": 2,
+  "fixed_threshold": null,
+  "seed": 42,
+  "finished_at": "2026-10-27T09:53:17Z"
+}

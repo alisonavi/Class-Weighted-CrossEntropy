@@ -1,0 +1,49 @@
+{
+  "run": "frozen_codebert_lr",
+  "role": "alternative method",
+  "method": "frozen CodeBERT embeddings + class-weighted logistic regression",
+  "variant": "with_p3",
+  "loss": "class-weighted log loss",
+  "class_weights_rule": "balanced",
+  "class_weights": {
+    "not_vulnerable": 0.5154,
+    "vulnerable": 16.6843
+  },
+  "model": {
+    "name": "microsoft/codebert-base",
+    "revision": "3b0952feddeffad0063f274080e3c23d75e7eb39",
+    "max_length": 512
+  },
+  "hyperparameters": {
+    "pooling": "mean",
+    "C_grid": [
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "C": 0.01,
+    "seed": 42
+  },
+  "rows": {
+    "train": 13214,
+    "valid": 5116,
+    "test": 4547
+  },
+  "best_epoch": null,
+  "best_valid_roc_auc": 0.8373,
+  "train_seconds": 189.0,
+  "embed_seconds": 186.9,
+  "fit_seconds": 2.1,
+  "trainable_parameters": 769,
+  "device": "mps",
+  "software": {
+    "python": "3.12.13",
+    "torch": "2.14.1",
+    "transformers": "5.21.0",
+    "scikit-learn": "1.9.1"
+  },
+  "checkpoint": "checkpoints/frozen_codebert_lr/classifier.npz",
+  "checkpoint_sha256": "8f9b46f69810aee37082f0dc3fbfe9ba8741043b0f14d63c6d763f9399af3e6e",
+  "finished_at": "2026-10-27T08:04:33Z"
+}

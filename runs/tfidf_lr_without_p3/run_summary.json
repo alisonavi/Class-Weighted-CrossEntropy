@@ -1,0 +1,12 @@
+{
+  "run": "tfidf_lr_without_p3",
+  "role": "reference: classic text model (Lab 4 baseline)",
+  "method": "TF-IDF of code tokens + class-weighted logistic regression",
+  "variant": "without_p3",
+  "class_weights_rule": "balanced",
+  "train_seconds": 0.4,
+  "trainable_parameters": 46416,
+  "fixed_threshold": null,
+  "seed": 42,
+  "finished_at": "2026-10-27T09:53:20Z"
+}

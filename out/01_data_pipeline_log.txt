@@ -1,0 +1,90 @@
+
+==============================================================================
+STEP 1  ACQUISITION
+==============================================================================
+with_p3     already on disk, checksum verified; raw files set to read-only
+without_p3  already on disk, checksum verified; raw files set to read-only
+CWE 4.20    already on disk, checksum verified; set to read-only
+
+==============================================================================
+STEP 2  EXTRACT
+==============================================================================
+split       train  valid  test
+variant                       
+with_p3     13247   5131  4576
+without_p3    810    272   252
+function_id unique: True
+
+==============================================================================
+STEP 3  TRANSFORM AND CLEAN
+==============================================================================
+R1  Windows line endings: 659 rows, normalised to LF, row kept
+R2  label, status or split not allowed or not consistent: 0 rows, quarantined
+R3  code is empty or does not parse as a Java method: 0 rows, quarantined
+R4  same function has another label in the other dataset version: 38 rows, quarantined
+R4  identical code carries both labels: 3 rows, quarantined
+R5  copy of a function that is already in an earlier split (leakage): 33 rows, removed from the later split
+R5  copy repeated inside the same split: 23 rows, removed, first copy kept
+
+with_p3     22954 in, 22877 clean, 22 quarantined, 55 duplicates removed
+without_p3  1334 in, 1314 clean, 19 quarantined, 1 duplicates removed
+
+==============================================================================
+STEP 4  DATA QUALITY ASSESSMENT
+==============================================================================
+                                   with_p3           without_p3         
+                                    before     after     before    after
+rows                              22954.00  22877.00    1334.00  1314.00
+completeness %                      100.00    100.00     100.00   100.00
+uniqueness %                         99.52    100.00      99.85   100.00
+validity %                          100.00    100.00     100.00   100.00
+label consistency %                  99.90    100.00      98.58   100.00
+functions in more than one split     29.00      0.00       1.00     0.00
+rows with CRLF line endings         624.00      0.00      35.00     0.00
+positives                           646.00    644.00     665.00   645.00
+negatives                         22308.00  22233.00     669.00   669.00
+prevalence %                          2.81      2.82      49.85    49.09
+negatives per positive               34.50     34.50       1.00     1.00
+
+Class distribution after cleaning (P1 = vulnerable, P2 = fixed, P3 = unchanged):
+partition          P1   P2     P3   rows  positives  prevalence %
+variant    split                                                 
+with_p3    train  396  396  12422  13214        396          3.00
+           valid  130  130   4856   5116        130          2.54
+           test   118  121   4308   4547        118          2.60
+without_p3 train  394  407      0    801        394         49.19
+           valid  134  133      0    267        134         50.19
+           test   117  129      0    246        117         47.56
+
+CodeBERT token lengths:
+                      functions  median_tokens  p90_tokens  over_512_pct
+variant    partition                                                    
+with_p3    P1               644          476.0      2500.1          47.7
+           P2               647          540.0      2492.8          52.2
+           P3             21586           90.0       555.0          11.2
+without_p3 P1               645          475.0      2491.8          47.6
+           P2               669          537.0      2487.4          52.3
+
+==============================================================================
+STEP 5  LOAD INTO THE WAREHOUSE
+==============================================================================
+dataset_version        2
+label_partition        3
+cwe                 1452
+vcs_commit           839
+java_function      24288
+quality_issue        756
+experiment_run         0
+prediction             0
+metric                 0
+
+model_input view (what training reads):
+   variant split  rows  positives
+   with_p3  test  4547        118
+   with_p3 train 13214        396
+   with_p3 valid  5116        130
+without_p3  test   246        117
+without_p3 train   801        394
+without_p3 valid   267        134
+
+warehouse file permissions set to owner read/write only (600)
